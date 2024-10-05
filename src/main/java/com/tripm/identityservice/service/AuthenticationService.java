@@ -8,6 +8,7 @@ import com.nimbusds.jwt.SignedJWT;
 import com.tripm.identityservice.dto.request.AuthenticationRequest;
 import com.tripm.identityservice.dto.request.IntrospectRequest;
 import com.tripm.identityservice.dto.request.LogoutRequest;
+import com.tripm.identityservice.dto.request.RefreshRequest;
 import com.tripm.identityservice.dto.response.AuthenticationResponse;
 import com.tripm.identityservice.dto.response.IntrospectRespone;
 import com.tripm.identityservice.entity.InvalidatedToken;
@@ -83,10 +84,10 @@ public class AuthenticationService {
     public void logout(LogoutRequest request) throws ParseException, JOSEException {
         var signToken = verifyToken(request.getToken());
 
-        String jti = signToken.getJWTClaimsSet().getJWTID();
+        String jit = signToken.getJWTClaimsSet().getJWTID();
         Date expiryTime  = signToken.getJWTClaimsSet().getExpirationTime();
         InvalidatedToken invalidatedToken = InvalidatedToken.builder()
-                .id(jti)
+                .id(jit)
                 .expiryTime(expiryTime)
                 .build();
 
@@ -111,6 +112,33 @@ public class AuthenticationService {
 
 
          return signedJWT;
+    }
+
+    public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
+        var signedJWT = verifyToken(request.getToken());
+
+        var jit = signedJWT.getJWTClaimsSet().getJWTID();
+        var expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+        InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                .id(jit)
+                .expiryTime(expiryTime)
+                .build();
+
+        invalidatedTokenRepository.save(invalidatedToken);
+        var username = signedJWT.getJWTClaimsSet().getSubject();
+
+        var user = userRepository.findByUsername(username).orElseThrow(
+                () -> new AppException(ErrorCode.UNAUTHENTICATED)
+        );
+
+        var token = generateToken(user);
+
+        return AuthenticationResponse.builder()
+                .token(token)
+                .authenticated(true)
+                .build();
+
     }
 
     String generateToken(User user){
