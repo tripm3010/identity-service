@@ -1,5 +1,6 @@
 package com.tripm.identityservice.service;
 
+import com.tripm.identityservice.dto.request.ApiResponse;
 import com.tripm.identityservice.dto.request.UserCreationRequest;
 import com.tripm.identityservice.dto.request.UserUpdateRequest;
 import com.tripm.identityservice.dto.response.UserResponse;
@@ -38,7 +39,7 @@ public class UserService {
     RoleRepository roleRepository;
     PasswordEncoder passwordEncoder;
 
-    public User createUser(UserCreationRequest request) {
+    public UserResponse createUser(UserCreationRequest request) {
 
         if(userRepository.existsByUsername(request.getUsername())) {
             throw new AppException(ErrorCode.USER_EXISTED);
@@ -51,8 +52,7 @@ public class UserService {
 
 //        user.setRoles(roles);
 
-
-        return userRepository.save(user);
+         return userMapper.toUserResponse( userRepository.save(user));
     }
 
 
