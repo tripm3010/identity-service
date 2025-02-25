@@ -1,14 +1,11 @@
 package com.tripm.identityservice.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Set;;
 
 @Entity
 @Getter
@@ -26,4 +23,7 @@ public class User {
      String lastname;
      String password;
      LocalDate dob;
+
+     @ManyToMany
+     Set<Role> role;
 }

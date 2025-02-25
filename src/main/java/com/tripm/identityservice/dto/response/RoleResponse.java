@@ -1,10 +1,10 @@
 package com.tripm.identityservice.dto.response;
 
-import jakarta.validation.constraints.Size;
+import com.tripm.identityservice.entity.Permission;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -12,12 +12,8 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserResponse {
-    String id;
-    String username;
-    String firstname;
-    String lastname;
-    LocalDate dob;
-
-    Set<String> role;
+public class RoleResponse {
+    String name;
+    String description;
+    Set<PermissionResponse> permissions;
 }

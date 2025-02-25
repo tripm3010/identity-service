@@ -21,3 +21,5 @@ server:
     servlet:
         context-path: /identity
 
+jwt:
+    signerKey: "s+KlA43TK3WxkiC1/FNogayrp2ARR3xMary3dTM3md8t7ihsPKNAkA350Og9YWZD"
