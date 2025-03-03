@@ -8,6 +8,7 @@ import com.tripm.identityservice.enums.Role;
 import com.tripm.identityservice.exception.AppException;
 import com.tripm.identityservice.exception.ErrorCode;
 import com.tripm.identityservice.mapper.UserMapper;
+import com.tripm.identityservice.repository.RoleRepository;
 import com.tripm.identityservice.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
+    RoleRepository roleRepository;
 
     public UserResponse createUser(UserCreationRequest request) {
 
@@ -48,6 +50,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+//    @PreAuthorize("hasAnyAuthority('APPROVE_POST')")
     @PreAuthorize("hasRole('ADMIN')")
     public List<User> getUsers() {
         return userRepository.findAll();
@@ -62,6 +65,9 @@ public class UserService {
         User user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         userMapper.updateUser(user, request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        var roles = roleRepository.findAllById(request.getRoles());
+        user.setRoles(new HashSet<>(roles));
         return userMapper.toUserResponse(userRepository.save(user));
     }
 

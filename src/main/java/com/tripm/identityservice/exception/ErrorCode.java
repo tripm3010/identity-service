@@ -13,14 +13,15 @@ import org.springframework.http.HttpStatusCode;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public enum ErrorCode {
-    USER_EXISTED(1001, "User existed", HttpStatus.CONFLICT),
+    USER_EXISTED(1002, "User existed", HttpStatus.CONFLICT),
     UNCATEGORIZED_EXCEPTION(9999, "Uncategorized exception", HttpStatus.INTERNAL_SERVER_ERROR),
-    USERNAME_INVALID(1003, "Username must be at least 3 characters", HttpStatus.BAD_REQUEST),
-    PASSWORD_INVALID(1004, "Password must be at least 8 characters", HttpStatus.BAD_REQUEST),
+    USERNAME_INVALID(1003, "Username must be at least {min} characters", HttpStatus.BAD_REQUEST),
+    PASSWORD_INVALID(1004, "Password must be at least {min} characters", HttpStatus.BAD_REQUEST),
     INVALID_KEY(1005, "Invalid message key", HttpStatus.BAD_REQUEST),
     USER_NOT_FOUND(1006, "User not found", HttpStatus.NOT_FOUND),
     UNAUTHENTICATED(1007, "Unauthenticated", HttpStatus.UNAUTHORIZED),
-    UNAUTHORIZED(1008, "Unauthorized", HttpStatus.FORBIDDEN),;
+    UNAUTHORIZED(1008, "Unauthorized", HttpStatus.FORBIDDEN),
+    INVALID_DOB(1009, "Your age must be at least {min} years old", HttpStatus.BAD_REQUEST),;
 
     int code;
     String message;
