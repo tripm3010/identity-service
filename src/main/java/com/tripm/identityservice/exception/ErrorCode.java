@@ -20,6 +20,7 @@ public enum ErrorCode {
     INVALID_KEY(1005, "Invalid message key", HttpStatus.BAD_REQUEST),
     USER_NOT_FOUND(1006, "User not found", HttpStatus.NOT_FOUND),
     UNAUTHENTICATED(1007, "Unauthenticated", HttpStatus.UNAUTHORIZED),
+    UNAUTHENTICATEDD(1007, "link error", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1008, "Unauthorized", HttpStatus.FORBIDDEN),
     INVALID_DOB(1009, "Your age must be at least {min} years old", HttpStatus.BAD_REQUEST),;
 

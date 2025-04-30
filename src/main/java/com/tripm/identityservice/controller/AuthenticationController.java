@@ -1,10 +1,7 @@
 package com.tripm.identityservice.controller;
 
 import com.nimbusds.jose.JOSEException;
-import com.tripm.identityservice.dto.request.ApiResponse;
-import com.tripm.identityservice.dto.request.AuthenticationRequest;
-import com.tripm.identityservice.dto.request.IntrospectRequest;
-import com.tripm.identityservice.dto.request.LogoutRequest;
+import com.tripm.identityservice.dto.request.*;
 import com.tripm.identityservice.dto.response.AuthenticationResponse;
 import com.tripm.identityservice.dto.response.IntrospectResponse;
 import com.tripm.identityservice.service.AuthenticationService;
@@ -45,5 +42,13 @@ public class AuthenticationController {
     public ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
          authenticationService.logout(request);
          return ApiResponse.<Void>builder().build();
+    }
+
+    @PostMapping("refresh")
+    ApiResponse<AuthenticationResponse> refreshToken(@RequestBody RefreshRequest request) throws ParseException, JOSEException {
+        var result = authenticationService.refreshToken(request);
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(result)
+                .build();
     }
 }

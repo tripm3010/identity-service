@@ -1,29 +1,32 @@
 package com.tripm.identityservice.service;
 
+import com.tripm.identityservice.constant.PredefinedRole;
 import com.tripm.identityservice.dto.request.UserCreationRequest;
 import com.tripm.identityservice.dto.request.UserUpdateRequest;
 import com.tripm.identityservice.dto.response.UserResponse;
+import com.tripm.identityservice.entity.Role;
 import com.tripm.identityservice.entity.User;
-import com.tripm.identityservice.enums.Role;
 import com.tripm.identityservice.exception.AppException;
 import com.tripm.identityservice.exception.ErrorCode;
+import com.tripm.identityservice.mapper.ProfileMapper;
 import com.tripm.identityservice.mapper.UserMapper;
 import com.tripm.identityservice.repository.RoleRepository;
 import com.tripm.identityservice.repository.UserRepository;
+import com.tripm.identityservice.repository.httpclient.ProfileClient;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 
+@Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Service
 @RequiredArgsConstructor
@@ -33,6 +36,8 @@ public class UserService {
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
     RoleRepository roleRepository;
+    ProfileClient profileClient;
+    ProfileMapper profileMapper;
 
     public UserResponse createUser(UserCreationRequest request) {
 
@@ -42,12 +47,18 @@ public class UserService {
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        HashSet<String> roles = new HashSet<>();
-        roles.add(Role.USER.name());
+        HashSet<Role> roles = new HashSet<>();
+//        roles.add(Role.USER.name());
+        roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);
 
-//        user.setRole(roles);
+        user.setRoles(roles);
 
-        return userMapper.toUserResponse(userRepository.save(user));
+        user = userRepository.save(user);
+        var profileRequest = profileMapper.toProfileCreationRequest(request);
+        profileRequest.setUserId(user.getId());
+        profileClient.createProfile(profileRequest);
+
+        return userMapper.toUserResponse(user);
     }
 
 //    @PreAuthorize("hasAnyAuthority('APPROVE_POST')")
@@ -75,7 +86,7 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public UserResponse getMyInfo(){
+    public UserResponse getMyInfo(String minhtri30101){
         var name = SecurityContextHolder.getContext().getAuthentication().getName();
 
         User byUserName = userRepository.findByUsername(name)

@@ -4,10 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
 import java.util.Set;;
 
-@Entity
+@Entity(name = "users")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -19,10 +18,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
      String id;
      String username;
-     String firstname;
-     String lastname;
      String password;
-     LocalDate dob;
 
      @ManyToMany
      Set<Role> roles;

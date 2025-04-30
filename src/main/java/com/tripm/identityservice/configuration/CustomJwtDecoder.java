@@ -1,6 +1,7 @@
 package com.tripm.identityservice.configuration;
 
 import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jwt.SignedJWT;
 import com.tripm.identityservice.dto.request.IntrospectRequest;
 import com.tripm.identityservice.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class CustomJwtDecoder implements JwtDecoder {
     @Override
     public Jwt decode(String token) throws JwtException {
 
-        try {
+        /*try {
             var response = authenticationService.introspect(
                     IntrospectRequest.builder().token(token).build());
 
@@ -45,6 +46,17 @@ public class CustomJwtDecoder implements JwtDecoder {
                     .build();
         }
 
-        return nimbusJwtDecoder.decode(token);
+        return nimbusJwtDecoder.decode(token);*/
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(token);
+
+            return new Jwt(token, signedJWT.getJWTClaimsSet().getIssueTime().toInstant()
+                    ,signedJWT.getJWTClaimsSet().getExpirationTime().toInstant()
+                    ,signedJWT.getHeader().toJSONObject(),
+                    signedJWT.getJWTClaimsSet().getClaims()
+            );
+        } catch (ParseException e) {
+            throw new JwtException("Invalid token");
+        }
     }
 }
